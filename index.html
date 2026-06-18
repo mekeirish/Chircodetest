@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧑‍⚕️ Chirurgien V3 (corrigé)</title>
+    <title>🧑‍⚕️ Chirurgien V4</title>
     <style>
         * {
             margin: 0;
@@ -160,6 +160,12 @@
         .btn-pur:hover {
             background: #146c2e;
         }
+        .btn-validate {
+            background: #d97706;
+        }
+        .btn-validate:hover {
+            background: #b45309;
+        }
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -309,6 +315,28 @@
             font-size: 11px;
             margin-left: 8px;
         }
+        .error-marker {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        .validation-result {
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+        .validation-pass {
+            background: rgba(45, 164, 78, 0.15);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        .validation-fail {
+            background: rgba(207, 34, 46, 0.15);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 22px;
@@ -339,6 +367,7 @@
             let pureCode = '';
             let fullHtmlCode = '';
             let modal = null;
+            let validationResult = '';
 
             const STORAGE_KEY = 'codeSurgeon_fragments';
             const STORAGE_RAW_KEY = 'codeSurgeon_rawInput';
@@ -347,10 +376,99 @@
             const app = document.getElementById('app');
 
             // ============================================================
+            // VALIDATION SYNTAXIQUE (avec Function constructor)
+            // ============================================================
+            function validateSyntax(code) {
+                const errors = [];
+                const lines = code.split('\n');
+
+                // 1. Vérifier les chaînes sans guillemets
+                const stringRegex = /const\s+\w+\s*=\s*([^'";`\s][^;]*?)(;|$)/g;
+                let match;
+                while ((match = stringRegex.exec(code)) !== null) {
+                    const raw = match[1].trim();
+                    // Si ça ressemble à du texte sans guillemets
+                    if (raw && !raw.startsWith('"') && !raw.startsWith("'") && !raw.startsWith('`') &&
+                        !raw.startsWith('{') && !raw.startsWith('[') && !raw.startsWith('(') &&
+                        !raw.startsWith('new') && !raw.startsWith('function') && !raw.startsWith('class') &&
+                        !raw.match(/^[0-9]/)) {
+                        const lineNum = code.substring(0, match.index).split('\n').length;
+                        errors.push(`Ligne ${lineNum}: Chaîne sans guillemets → "${raw}"`);
+                    }
+                }
+
+                // 2. Vérifier les parenthèses, crochets, accolades
+                const chars = code.split('');
+                const stack = [];
+                const pairs = { '(': ')', '[': ']', '{': '}' };
+                const openers = new Set(['(', '[', '{']);
+                const closers = new Set([')', ']', '}']);
+                for (let i = 0; i < chars.length; i++) {
+                    const c = chars[i];
+                    // Ignorer les chaînes
+                    if (c === '"' || c === "'" || c === '`') {
+                        const quote = c;
+                        i++;
+                        while (i < chars.length && chars[i] !== quote) {
+                            if (chars[i] === '\\') i++;
+                            i++;
+                        }
+                        continue;
+                    }
+                    if (openers.has(c)) {
+                        stack.push({ char: c, index: i });
+                    } else if (closers.has(c)) {
+                        const last = stack.pop();
+                        if (!last || pairs[last.char] !== c) {
+                            const lineNum = code.substring(0, i).split('\n').length;
+                            errors.push(`Ligne ${lineNum}: ${c} non fermé ou mal apparié`);
+                        }
+                    }
+                }
+                if (stack.length > 0) {
+                    const last = stack[stack.length - 1];
+                    const lineNum = code.substring(0, last.index).split('\n').length;
+                    errors.push(`Ligne ${lineNum}: ${last.char} non fermé`);
+                }
+
+                // 3. Vérifier les points-virgules manquants (approximatif)
+                const lines2 = code.split('\n');
+                for (let i = 0; i < lines2.length; i++) {
+                    const line = lines2[i].trim();
+                    if (line && !line.endsWith('{') && !line.endsWith('}') && !line.endsWith(';') &&
+                        !line.endsWith('(') && !line.endsWith('[') && !line.endsWith(',') &&
+                        !line.startsWith('//') && !line.startsWith('/*') && !line.startsWith('*') &&
+                        !line.endsWith('=>') && !line.endsWith('return')) {
+                        // Vérifier si c'est une déclaration qui devrait avoir un ;
+                        if (line.match(/^(const|let|var|function|class|return|break|continue|throw)/)) {
+                            errors.push(`Ligne ${i+1}: Point-virgule manquant → "${line}"`);
+                        }
+                    }
+                }
+
+                return errors;
+            }
+
+            function runValidation() {
+                if (fragments.length === 0) {
+                    validationResult = '⚠️ Aucun fragment à valider.';
+                    render();
+                    return;
+                }
+                const pure = fragments.map(f => f.content).join('\n\n');
+                const errors = validateSyntax(pure);
+                if (errors.length === 0) {
+                    validationResult = '✅ Aucune erreur syntaxique détectée !';
+                } else {
+                    validationResult = '❌ ' + errors.length + ' erreur(s) détectée(s) :\n' + errors.join('\n');
+                }
+                render();
+            }
+
+            // ============================================================
             // TEMPLATE HTML COMPLET
             // ============================================================
             function buildFullHtml(pureCode) {
-                // Échappement pour les backticks et les guillemets
                 const escaped = pureCode
                     .replace(/\\/g, '\\\\')
                     .replace(/`/g, '\\`')
@@ -438,6 +556,7 @@
                 assembledCode = '';
                 pureCode = '';
                 fullHtmlCode = '';
+                validationResult = '';
                 saveFragments();
                 render();
                 console.log('✅ Fragments découpés :', fragments.length);
@@ -452,6 +571,7 @@
                 assembledCode = '';
                 pureCode = '';
                 fullHtmlCode = '';
+                validationResult = '';
                 saveFragments();
                 render();
                 console.log('✅ Fragment mis à jour :', id);
@@ -463,34 +583,32 @@
                 assembledCode = '';
                 pureCode = '';
                 fullHtmlCode = '';
+                validationResult = '';
                 saveFragments();
                 render();
                 console.log('🗑️ Fragment supprimé :', id);
             }
 
-            // --- BOUTON "Avec balises" ---
             function reconstructTagged() {
                 if (fragments.length === 0) { alert('Aucun fragment.'); return; }
                 assembledCode = fragments.map(f => `---FRAGMENT: ${f.id} ---\n${f.content}\n---END---`).join('\n\n');
                 pureCode = '';
                 fullHtmlCode = '';
+                validationResult = '';
                 render();
                 console.log('🧩 Assemblé avec balises :', assembledCode.length, 'caractères');
             }
 
-            // --- BOUTON "Code PUR" (SEULEMENT LE CONTENU) ---
             function reconstructPure() {
                 if (fragments.length === 0) { alert('Aucun fragment.'); return; }
-                // ICI : on ne prend que f.content, pas les balises !
                 pureCode = fragments.map(f => f.content).join('\n\n');
                 assembledCode = '';
                 fullHtmlCode = '';
+                validationResult = '';
                 render();
                 console.log('⚡ Code PUR généré :', pureCode.length, 'caractères');
-                console.log('✅ Contenu des fragments extrait sans les balises.');
             }
 
-            // --- BOUTON "Télécharger HTML" (utilise le code PUR) ---
             function downloadFullHtml() {
                 if (fragments.length === 0) { alert('Aucun fragment.'); return; }
                 const pure = fragments.map(f => f.content).join('\n\n');
@@ -508,6 +626,7 @@
                 fullHtmlCode = fullHtml;
                 assembledCode = '';
                 pureCode = '';
+                validationResult = '';
                 render();
                 console.log('📥 HTML complet téléchargé');
             }
@@ -543,6 +662,7 @@
                 assembledCode = '';
                 pureCode = '';
                 fullHtmlCode = '';
+                validationResult = '';
                 saveFragments();
                 render();
             }
@@ -652,10 +772,20 @@
                     `;
                 }
 
+                // Validation result
+                let validationHtml = '';
+                if (validationResult) {
+                    const isPass = validationResult.includes('✅');
+                    const cls = isPass ? 'validation-pass' : 'validation-fail';
+                    validationHtml = `
+                        <div class="validation-result ${cls}">${escapeHtml(validationResult)}</div>
+                    `;
+                }
+
                 const html = `
                     <div id="app-container">
                         <header class="header">
-                            <h1>🧑‍⚕️ Chirurgien V3 <span>Corrigé</span></h1>
+                            <h1>🧑‍⚕️ Chirurgien V4 <span>Validateur</span></h1>
                             <button class="theme-toggle" id="themeToggleBtn">${themeIcon}</button>
                         </header>
 
@@ -682,14 +812,16 @@
                             ${fragmentsHtml}
                         </div>
 
-                        <!-- CARTE 3 : TROIS BOUTONS -->
+                        <!-- CARTE 3 : TROIS BOUTONS + VALIDATION -->
                         <div class="card">
                             <div class="card-title">🚀 3. Reconstruire</div>
                             <div class="tab-actions">
                                 <button class="btn btn-warning" id="reconstructTaggedBtn" ${fragCount === 0 ? 'disabled' : ''}>🧩 Avec balises</button>
                                 <button class="btn btn-pur" id="reconstructPureBtn" ${fragCount === 0 ? 'disabled' : ''}>⚡ Code PUR</button>
+                                <button class="btn btn-validate" id="validateBtn" ${fragCount === 0 ? 'disabled' : ''}>🔍 Vérifier syntaxe</button>
                                 <button class="btn btn-download" id="downloadHtmlBtn" ${fragCount === 0 ? 'disabled' : ''}>📥 Télécharger HTML</button>
                             </div>
+                            ${validationHtml}
                             ${previewHtml}
                         </div>
 
@@ -710,6 +842,7 @@
                 document.getElementById('themeToggleBtn')?.addEventListener('click', toggleTheme);
                 document.getElementById('reconstructTaggedBtn')?.addEventListener('click', reconstructTagged);
                 document.getElementById('reconstructPureBtn')?.addEventListener('click', reconstructPure);
+                document.getElementById('validateBtn')?.addEventListener('click', runValidation);
                 document.getElementById('downloadHtmlBtn')?.addEventListener('click', downloadFullHtml);
 
                 // Copie via data-copy
@@ -768,7 +901,7 @@
             // ============================================================
             loadState();
             render();
-            console.log('🧑‍⚕️ Chirurgien V3 chargé');
+            console.log('🧑‍⚕️ Chirurgien V4 chargé');
         })();
     </script>
 </body>
