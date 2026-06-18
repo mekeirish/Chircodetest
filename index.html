@@ -3,31 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧑‍⚕️ Chirurgien de Code Pro</title>
-
-    <!-- 1. CHARGEMENT DES BIBLIOTHÈQUES VIA CDN (SANS IMPORT MAP) -->
-    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js">
-    </script>
-    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js">
-    </script>
-
+    <title>🧑‍⚕️ Chirurgien Vanilla V2</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
         }
-
         :root {
             --bg: #f6f8fa;
             --surface: #ffffff;
             --text: #1f2328;
             --border: #d0d7de;
             --primary: #0969da;
-            --primary-hover: #0550ae;
             --danger: #cf222e;
             --success: #2da44e;
             --warning: #d4a72c;
@@ -35,17 +23,12 @@
             --radius: 12px;
             --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-
         [data-theme="dark"] {
             --bg: #0d1117;
             --surface: #161b22;
             --text: #f0f6fc;
             --border: #30363d;
-            --primary: #58a6ff;
-            --primary-hover: #79c0ff;
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
-
         body {
             background: var(--bg);
             color: var(--text);
@@ -55,18 +38,13 @@
             display: flex;
             justify-content: center;
         }
-
-        #root {
+        #app {
             width: 100%;
             max-width: 1300px;
-        }
-
-        .app {
             display: flex;
             flex-direction: column;
             gap: 24px;
         }
-
         .header {
             display: flex;
             justify-content: space-between;
@@ -74,7 +52,6 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-
         .header h1 {
             font-size: 28px;
             font-weight: 700;
@@ -90,7 +67,6 @@
             border-radius: 30px;
             font-weight: 500;
         }
-
         .theme-toggle {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -105,7 +81,6 @@
         .theme-toggle:hover {
             opacity: 0.8;
         }
-
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -113,7 +88,6 @@
             padding: 20px 24px;
             box-shadow: var(--shadow);
         }
-
         .card-title {
             font-weight: 600;
             font-size: 16px;
@@ -128,7 +102,6 @@
             font-size: 13px;
             opacity: 0.7;
         }
-
         textarea {
             width: 100%;
             background: var(--bg);
@@ -136,7 +109,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px 14px;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace, 'Courier New', monospace;
+            font-family: 'Courier New', monospace;
             font-size: 13px;
             resize: vertical;
             outline: none;
@@ -147,7 +120,6 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
         }
-
         .btn {
             background: var(--primary);
             color: #fff;
@@ -163,43 +135,30 @@
             gap: 8px;
         }
         .btn:hover {
-            background: var(--primary-hover);
+            opacity: 0.85;
             transform: translateY(-1px);
         }
         .btn-danger {
             background: var(--danger);
         }
-        .btn-danger:hover {
-            background: #a0111f;
-        }
         .btn-success {
             background: var(--success);
-        }
-        .btn-success:hover {
-            background: #22863a;
         }
         .btn-warning {
             background: var(--warning);
             color: #000;
         }
-        .btn-warning:hover {
-            background: #b8922a;
+        .btn-download {
+            background: #6f42c1;
         }
-        .btn-outline {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-        .btn-outline:hover {
-            background: var(--bg);
-            transform: none;
+        .btn-download:hover {
+            background: #5a32a3;
         }
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
-
         .actions-row {
             display: flex;
             flex-wrap: wrap;
@@ -207,14 +166,12 @@
             margin-top: 14px;
             align-items: center;
         }
-
         .fragment-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 6px;
         }
-
         .fragment-chip {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -252,7 +209,6 @@
         .fragment-chip .del:hover {
             opacity: 1;
         }
-
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -289,13 +245,11 @@
             margin-top: 16px;
             justify-content: flex-end;
         }
-
         .empty-state {
             opacity: 0.6;
             font-style: italic;
             padding: 10px 0;
         }
-
         .preview-wrapper {
             margin-top: 16px;
             border-top: 1px dashed var(--border);
@@ -325,25 +279,25 @@
         .btn-copy:hover {
             background: var(--bg);
         }
-
         .stats {
             font-size: 13px;
             opacity: 0.7;
             margin-left: auto;
         }
-
         .tab-actions {
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+            flex-wrap: wrap;
         }
         .tab-actions .btn {
             flex: 1;
             justify-content: center;
+            min-width: 120px;
         }
-
+        .hidden {
+            display: none !important;
+        }
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 22px;
@@ -358,370 +312,543 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="app"></div>
 
-    <script type="text/babel">
-        const {
-            useState,
-            useEffect,
-            useRef,
-            useCallback,
-            useMemo
-        } = React;
+    <script>
+        (function() {
+            'use strict';
 
-        const STORAGE_KEY = 'codeSurgeon_fragments';
-        const STORAGE_RAW_KEY = 'codeSurgeon_rawInput';
-        const STORAGE_THEME_KEY = 'theme';
+            // ============================================================
+            // CONSTRUCTION DU HTML FINAL SANS TEMPLATE STRING COMPLEXE
+            // ============================================================
+            function buildFullHtml(pureCode) {
+                // On échappe le code pur pour l'insérer dans une chaîne JavaScript
+                // On remplace : \ -> \\, ` -> \`, $ -> \$
+                const escaped = pureCode
+                    .replace(/\\/g, '\\\\')
+                    .replace(/`/g, '\\`')
+                    .replace(/\$/g, '\\$');
 
-        function App() {
-            const [fragments, setFragments] = useState([]);
-            const [rawInput, setRawInput] = useState('');
-            const [theme, setTheme] = useState('light');
-            const [assembledCode, setAssembledCode] = useState(''); // Avec balises
-            const [pureCode, setPureCode] = useState(''); // Sans balises (pour tester)
-            const [modal, setModal] = useState(null);
+                // On construit le HTML en concaténant des chaînes simples
+                return '<!DOCTYPE html>\n' +
+                    '<html lang="fr">\n' +
+                    '<head>\n' +
+                    '    <meta charset="UTF-8">\n' +
+                    '    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">\n' +
+                    '    <title>Cafétéria iCafe — Édition Apple</title>\n' +
+                    '    <script src="https://cdn.tailwindcss.com"><\/script>\n' +
+                    '    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"><\/script>\n' +
+                    '    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"><\/script>\n' +
+                    '    <style>\n' +
+                    '        * { -webkit-tap-highlight-color: transparent; }\n' +
+                    '        body { background-color: #000000; font-family: system-ui, -apple-system, \'SF Pro Text\', \'Helvetica Neue\', sans-serif; letter-spacing: -0.01em; }\n' +
+                    '        ::-webkit-scrollbar { width: 4px; height: 4px; }\n' +
+                    '        ::-webkit-scrollbar-track { background: #1c1c1e; border-radius: 20px; }\n' +
+                    '        ::-webkit-scrollbar-thumb { background: #555; border-radius: 20px; }\n' +
+                    '        .edit-mode { outline: 2px solid #007aff; outline-offset: -1px; border-radius: 32px; }\n' +
+                    '        .editable { position: relative; cursor: pointer; transition: all 0.2s ease; }\n' +
+                    '        .editable::after { content: "✎"; position: absolute; top: 6px; right: 8px; font-size: 10px; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); color: #ffffff; border-radius: 20px; padding: 2px 6px; font-weight: 500; pointer-events: none; z-index: 20; border: 0.5px solid rgba(255,255,255,0.2); }\n' +
+                    '        .cat-btn, .prod-btn { transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1); backdrop-filter: blur(12px); border: 0.5px solid rgba(255,255,255,0.08); }\n' +
+                    '        .cat-btn:active, .prod-btn:active { transform: scale(0.97); background-color: rgba(255,255,255,0.12); }\n' +
+                    '        .floating-btn { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(30,30,35,0.8); backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 40px; padding: 10px 24px; font-size: 14px; font-weight: 500; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: 0.2s; white-space: nowrap; }\n' +
+                    '        .floating-btn:hover { background: #007aff; color: white; border-color: transparent; }\n' +
+                    '        .saloon-logo-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: auto; opacity: 0.04; pointer-events: none; z-index: 0; filter: blur(0.5px); }\n' +
+                    '        .relative-bg { position: relative; }\n' +
+                    '        .relative-bg > *:not(.saloon-logo-bg) { position: relative; z-index: 2; }\n' +
+                    '        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }\n' +
+                    '        .modal-anim { animation: fadeInUp 0.25s ease-out; }\n' +
+                    '        input, textarea { font-size: 16px; }\n' +
+                    '        input:focus, textarea:focus, button:focus { outline: none; }\n' +
+                    '    </style>\n' +
+                    '    <link rel="manifest" href="manifest.json">\n' +
+                    '    <meta name="theme-color" content="#4b6cb7">\n' +
+                    '    <link rel="apple-touch-icon" href="icon.png">\n' +
+                    '</head>\n' +
+                    '<body class="bg-black text-white antialiased overflow-hidden">\n' +
+                    '    <div id="root" style="height: 100dvh;"></div>\n' +
+                    '    <script>\n' +
+                    '        (function() {\n' +
+                    '            window.onerror = function(msg, url, line, col, error) {\n' +
+                    '                console.error("ERREUR:", msg, "à la ligne", line);\n' +
+                    '                return false;\n' +
+                    '            };\n' +
+                    '            console.log("Démarrage — édition Apple premium");\n' +
+                    '            const { useState, useEffect, useCallback, useMemo, useRef, memo } = React;\n' +
+                    '            // ==========================================\n' +
+                    '            // CODE INJECTÉ\n' +
+                    '            // ==========================================\n' +
+                    '            ' + escaped + '\n' +
+                    '            // ==========================================\n' +
+                    '            // FIN DU CODE INJECTÉ\n' +
+                    '            // ==========================================\n' +
+                    '            const root = ReactDOM.createRoot(document.getElementById("root"));\n' +
+                    '            root.render(React.createElement(CafeteriaApp));\n' +
+                    '        })();\n' +
+                    '    <\/script>\n' +
+                    '    <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));}<\/script>\n' +
+                    '    <script>\n' +
+                    '        // ============================================================\n' +
+                    '        // RECORDCODE BRIDGE – Version simplifiée (sans backticks)\n' +
+                    '        (function() {\n' +
+                    '            "use strict";\n' +
+                    '            var DEBUG = true;\n' +
+                    '            var ATTR_NAME = "data-recordcode-id";\n' +
+                    '            function log() { if (DEBUG) console.log("[Recordcode]", Array.from(arguments).join(" ")); }\n' +
+                    '            if (window === window.top) { console.warn("[Recordcode] Page non intégrée dans une iframe"); }\n' +
+                    '            var idCounter = 0;\n' +
+                    '            function ensureRecordId(el) { if (!el) return; if (el.hasAttribute(ATTR_NAME)) return; var id = "rc_" + (++idCounter); el.setAttribute(ATTR_NAME, id); return id; }\n' +
+                    '            function addIdsToExistingElements() { var interactives = document.querySelectorAll("button, a, input, textarea, select, [role=button], [tabindex]"); interactives.forEach(function(el) { ensureRecordId(el); }); log("✅ Identifiants ajoutés à", interactives.length, "éléments"); }\n' +
+                    '            var observer = new MutationObserver(function(mutations) { for (var m = 0; m < mutations.length; m++) { var mutation = mutations[m]; for (var n = 0; n < mutation.addedNodes.length; n++) { var node = mutation.addedNodes[n]; if (node.nodeType === 1) { if (node.matches && node.matches("button, a, input, textarea, select, [role=button], [tabindex]")) { ensureRecordId(node); } var descendants = node.querySelectorAll ? node.querySelectorAll("button, a, input, textarea, select, [role=button], [tabindex]") : []; for (var d = 0; d < descendants.length; d++) { ensureRecordId(descendants[d]); } } } } });\n' +
+                    '            observer.observe(document.body, { childList: true, subtree: true });\n' +
+                    '            if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", function() { addIdsToExistingElements(); }); } else { addIdsToExistingElements(); }\n' +
+                    '            function sendToParent(payload) { if (window.parent && window.parent !== window) { try { window.parent.postMessage(payload, "*"); log("📤 Envoyé au parent"); } catch (e) { console.warn("[Recordcode] Erreur postMessage", e); } } else { log("ℹ️ Pas de parent"); } }\n' +
+                    '            function sendAction(action, selector, value, extra) { if (extra === undefined) extra = {}; var payload = { type: "ACTION", action: action, selector: selector, value: value }; for (var k in extra) { payload[k] = extra[k]; } sendToParent(payload); }\n' +
+                    '            function getSelector(el) { if (!el) return null; if (el.hasAttribute(ATTR_NAME)) { return "[" + ATTR_NAME + "=\\"" + el.getAttribute(ATTR_NAME) + "\\"]"; } if (el.id) return "#" + el.id; if (el.name) return "[name=\\"" + el.name + "\\"]"; var path = []; var current = el; var depth = 0; while (current && current.tagName !== "BODY" && depth < 4) { var sel = current.tagName.toLowerCase(); if (current.id) { sel += "#" + current.id; path.unshift(sel); break; } if (current.className) { var classes = current.className.split(" ").filter(function(c) { return c && c !== "active" && c !== "hover"; }).join("."); if (classes) sel += "." + classes; } var siblings = current.parentNode ? Array.from(current.parentNode.children).filter(function(c) { return c.tagName === current.tagName; }) : []; if (siblings.length > 1) { var idx = siblings.indexOf(current) + 1; sel += ":nth-child(" + idx + ")"; } path.unshift(sel); current = current.parentNode; depth++; } return path.join(" > "); }\n' +
+                    '            document.addEventListener("click", function(e) { var target = e.target; if (target.closest("input, textarea, select")) return; ensureRecordId(target); sendAction("click", getSelector(target), null, { x: e.clientX, y: e.clientY }); }, true);\n' +
+                    '            document.addEventListener("input", function(e) { var target = e.target; if (target.matches("input, textarea, select")) { ensureRecordId(target); sendAction("input", getSelector(target), target.value); } }, true);\n' +
+                    '            document.addEventListener("change", function(e) { var target = e.target; if (target.matches("select, input[type=checkbox], input[type=radio]")) { ensureRecordId(target); sendAction("change", getSelector(target), target.value); } }, true);\n' +
+                    '            document.addEventListener("focusin", function(e) { var target = e.target; if (target.matches("input, textarea, select, button, a")) { ensureRecordId(target); sendAction("focus", getSelector(target)); } }, true);\n' +
+                    '            document.addEventListener("focusout", function(e) { var target = e.target; if (target.matches("input, textarea, select, button, a")) { ensureRecordId(target); sendAction("blur", getSelector(target)); } }, true);\n' +
+                    '            document.addEventListener("scroll", function(e) { var target = e.target; if (target === document || target === window) { sendAction("scroll", "window", null, { scrollX: window.scrollX, scrollY: window.scrollY }); } else if (target.nodeType === 1) { ensureRecordId(target); sendAction("scroll", getSelector(target), null, { scrollLeft: target.scrollLeft, scrollTop: target.scrollTop }); } }, { passive: true, capture: true });\n' +
+                    '            document.addEventListener("submit", function(e) { var form = e.target; if (form.tagName === "FORM") { ensureRecordId(form); sendAction("submit", getSelector(form)); } }, true);\n' +
+                    '            document.addEventListener("keydown", function(e) { if (e.key === "Enter" || e.key === "Escape" || e.key === "Tab" || e.ctrlKey || e.metaKey) { var target = e.target; ensureRecordId(target); sendAction("keydown", getSelector(target), e.key, { key: e.key, ctrlKey: e.ctrlKey, shiftKey: e.shiftKey, altKey: e.altKey, metaKey: e.metaKey }); } }, true);\n' +
+                    '            document.addEventListener("keyup", function(e) { if (e.key === "Enter" || e.key === "Escape" || e.key === "Tab" || e.ctrlKey || e.metaKey) { var target = e.target; ensureRecordId(target); sendAction("keyup", getSelector(target), e.key, { key: e.key, ctrlKey: e.ctrlKey, shiftKey: e.shiftKey, altKey: e.altKey, metaKey: e.metaKey }); } }, true);\n' +
+                    '            document.addEventListener("contextmenu", function(e) { var target = e.target; ensureRecordId(target); sendAction("contextmenu", getSelector(target), null, { x: e.clientX, y: e.clientY }); }, true);\n' +
+                    '            document.addEventListener("dragstart", function(e) { var target = e.target; ensureRecordId(target); sendAction("dragstart", getSelector(target)); }, true);\n' +
+                    '            document.addEventListener("drop", function(e) { var target = e.target; ensureRecordId(target); sendAction("drop", getSelector(target)); }, true);\n' +
+                    '            window.addEventListener("message", function(e) { if (window.parent && e.source !== window.parent) return; var data = e.data; if (!data) return; if (data.type === "SIMULATE_CLICK") { var x = data.x; var y = data.y; var el = document.elementFromPoint(x, y); if (el) { el.dispatchEvent(new MouseEvent("click", { clientX: x, clientY: y, bubbles: true, cancelable: true })); } return; } if (data.type === "ACTION") { var action = data.action; var selector = data.selector; var value = data.value; var extra = data.extra || {}; var target = null; if (selector === "window") { target = window; } else if (selector) { target = document.querySelector(selector); } if (!target && ["scroll","submit","keydown","keyup"].indexOf(action) === -1) { console.warn("[Recordcode] Cible introuvable", selector); return; } try { switch(action) { case "click": target.click(); break; case "input": if (target.tagName === "SELECT") { target.value = value; target.dispatchEvent(new Event("change", { bubbles: true })); } else if (target.type === "checkbox" || target.type === "radio") { target.checked = (value === "on" || value === "true" || value === true); target.dispatchEvent(new Event("change", { bubbles: true })); } else { target.value = value; target.dispatchEvent(new Event("input", { bubbles: true })); } break; case "change": if (target.tagName === "SELECT") { target.value = value; target.dispatchEvent(new Event("change", { bubbles: true })); } else if (target.type === "checkbox" || target.type === "radio") { target.checked = (value === "on" || value === "true" || value === true); target.dispatchEvent(new Event("change", { bubbles: true })); } break; case "focus": target.focus(); break; case "blur": target.blur(); break; case "scroll": if (target === window) { window.scrollTo(extra.scrollX || 0, extra.scrollY || 0); } else if (target && target.nodeType === 1) { target.scrollLeft = extra.scrollLeft || 0; target.scrollTop = extra.scrollTop || 0; } break; case "submit": if (target && target.tagName === "FORM") target.submit(); break; case "keydown": case "keyup": var ev = new KeyboardEvent(action, { key: value, bubbles: true, cancelable: true }); (target || document).dispatchEvent(ev); break; case "contextmenu": (target || document).dispatchEvent(new MouseEvent("contextmenu", { clientX: extra.x || 0, clientY: extra.y || 0, bubbles: true, cancelable: true })); break; case "mouseover": target.dispatchEvent(new MouseEvent("mouseover", { bubbles: true })); break; case "mouseout": target.dispatchEvent(new MouseEvent("mouseout", { bubbles: true })); break; case "dragstart": target.dispatchEvent(new DragEvent("dragstart", { bubbles: true })); break; case "drop": target.dispatchEvent(new DragEvent("drop", { bubbles: true })); break; default: console.warn("[Recordcode] Action non prise en charge", action); } } catch(err) { console.error("[Recordcode] Erreur", err); } } });\n' +
+                    '            function sendReady() { sendToParent({ type: "TEST", msg: "Bridge ready" }); log("✅ Bridge prêt"); }\n' +
+                    '            if (document.readyState === "complete") { sendReady(); } else { window.addEventListener("load", sendReady); }\n' +
+                    '        })();\n' +
+                    '    <\/script>\n' +
+                    '    <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));}<\/script>\n' +
+                    '</body>\n' +
+                    '</html>';
+            }
 
-            useEffect(() => {
-                const savedFrags = localStorage.getItem(STORAGE_KEY);
-                const savedRaw = localStorage.getItem(STORAGE_RAW_KEY);
-                const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+            // ============================================================
+            // ÉTAT
+            // ============================================================
+            let fragments = [];
+            let rawInput = '';
+            let theme = 'light';
+            let assembledCode = '';
+            let pureCode = '';
+            let fullHtmlCode = '';
+            let modal = null;
 
-                if (savedFrags) {
-                    try { setFragments(JSON.parse(savedFrags)); } catch (e) {}
-                }
-                if (savedRaw) setRawInput(savedRaw);
+            const STORAGE_KEY = 'codeSurgeon_fragments';
+            const STORAGE_RAW_KEY = 'codeSurgeon_rawInput';
+            const STORAGE_THEME_KEY = 'theme';
+
+            const app = document.getElementById('app');
+
+            // ============================================================
+            // FONCTIONS
+            // ============================================================
+            function loadState() {
+                var savedFrags = localStorage.getItem(STORAGE_KEY);
+                var savedRaw = localStorage.getItem(STORAGE_RAW_KEY);
+                var savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+
+                if (savedFrags) { try { fragments = JSON.parse(savedFrags); } catch (e) {} }
+                if (savedRaw) rawInput = savedRaw;
                 if (savedTheme) {
-                    setTheme(savedTheme);
+                    theme = savedTheme;
                     document.documentElement.setAttribute('data-theme', savedTheme);
                 } else {
                     document.documentElement.setAttribute('data-theme', 'light');
                 }
-            }, []);
+            }
 
-            useEffect(() => {
+            function saveFragments() {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(fragments));
-            }, [fragments]);
+            }
 
-            useEffect(() => {
+            function saveRaw() {
                 localStorage.setItem(STORAGE_RAW_KEY, rawInput);
-            }, [rawInput]);
+            }
 
-            useEffect(() => {
+            function saveTheme() {
                 localStorage.setItem(STORAGE_THEME_KEY, theme);
-                document.documentElement.setAttribute('data-theme', theme);
-            }, [theme]);
+            }
 
-            const parseFragments = () => {
-                const regex = /---FRAGMENT:\s*([^\n]+?)\s*---([\s\S]*?)---END---/g;
-                const matches = [];
-                let match;
-                let temp = rawInput;
+            function parseFragments() {
+                var regex = /---FRAGMENT:\s*([^\n]+?)\s*---([\s\S]*?)---END---/g;
+                var matches = [];
+                var match;
+                var temp = rawInput;
                 while ((match = regex.exec(temp)) !== null) {
-                    const id = match[1].trim();
-                    const content = match[2].trim();
-                    const existingIndex = matches.findIndex(f => f.id === id);
+                    var id = match[1].trim();
+                    var content = match[2].trim();
+                    var existingIndex = -1;
+                    for (var i = 0; i < matches.length; i++) {
+                        if (matches[i].id === id) { existingIndex = i; break; }
+                    }
                     if (existingIndex !== -1) {
                         matches[existingIndex].content = content;
                     } else {
-                        matches.push({ id, content });
+                        matches.push({ id: id, content: content });
                     }
                 }
                 if (matches.length === 0) {
                     alert('⚠️ Aucun fragment trouvé ! Vérifie le format : ---FRAGMENT: Nom --- ... ---END---');
                     return;
                 }
-                setFragments(matches);
-                setAssembledCode('');
-                setPureCode('');
-            };
+                fragments = matches;
+                assembledCode = '';
+                pureCode = '';
+                fullHtmlCode = '';
+                saveFragments();
+                render();
+            }
 
-            const updateFragment = (id, newContent) => {
-                setFragments(prev =>
-                    prev.map(f => f.id === id ? { ...f, content: newContent.trim() } : f)
-                );
-                setModal(null);
-                setAssembledCode('');
-                setPureCode('');
-            };
-
-            const deleteFragment = (id) => {
-                if (!confirm(`Supprimer définitivement le fragment "${id}" ?`)) return;
-                setFragments(prev => prev.filter(f => f.id !== id));
-                setAssembledCode('');
-                setPureCode('');
-            };
-
-            // --- RECONSTRUCTION AVEC BALISES (pour sauvegarde) ---
-            const reconstructTagged = () => {
-                if (fragments.length === 0) {
-                    alert('Aucun fragment à assembler.');
-                    return;
+            function updateFragment(id, newContent) {
+                for (var i = 0; i < fragments.length; i++) {
+                    if (fragments[i].id === id) {
+                        fragments[i].content = newContent.trim();
+                        break;
+                    }
                 }
-                const full = fragments.map(f =>
-                    `---FRAGMENT: ${f.id} ---\n${f.content}\n---END---`
-                ).join('\n\n');
-                setAssembledCode(full);
-                setPureCode(''); // on efface l'autre pour la clarté
-            };
+                modal = null;
+                assembledCode = '';
+                pureCode = '';
+                fullHtmlCode = '';
+                saveFragments();
+                render();
+            }
 
-            // --- RECONSTRUCTION CODE PUR (pour tester) ---
-            const reconstructPure = () => {
-                if (fragments.length === 0) {
-                    alert('Aucun fragment.');
-                    return;
+            function deleteFragment(id) {
+                if (!confirm('Supprimer définitivement le fragment "' + id + '" ?')) return;
+                var newFrags = [];
+                for (var i = 0; i < fragments.length; i++) {
+                    if (fragments[i].id !== id) newFrags.push(fragments[i]);
                 }
-                // On concatène juste les contenus dans l'ordre
-                const pure = fragments.map(f => f.content).join('\n\n');
-                setPureCode(pure);
-                setAssembledCode(''); // on efface l'autre
-            };
+                fragments = newFrags;
+                assembledCode = '';
+                pureCode = '';
+                fullHtmlCode = '';
+                saveFragments();
+                render();
+            }
 
-            const copyToClipboard = (text) => {
+            function reconstructTagged() {
+                if (fragments.length === 0) { alert('Aucun fragment.'); return; }
+                var parts = [];
+                for (var i = 0; i < fragments.length; i++) {
+                    parts.push('---FRAGMENT: ' + fragments[i].id + ' ---\n' + fragments[i].content + '\n---END---');
+                }
+                assembledCode = parts.join('\n\n');
+                pureCode = '';
+                fullHtmlCode = '';
+                render();
+            }
+
+            function reconstructPure() {
+                if (fragments.length === 0) { alert('Aucun fragment.'); return; }
+                var parts = [];
+                for (var i = 0; i < fragments.length; i++) {
+                    parts.push(fragments[i].content);
+                }
+                pureCode = parts.join('\n\n');
+                assembledCode = '';
+                fullHtmlCode = '';
+                render();
+            }
+
+            function downloadFullHtml() {
+                if (fragments.length === 0) { alert('Aucun fragment.'); return; }
+                var parts = [];
+                for (var i = 0; i < fragments.length; i++) {
+                    parts.push(fragments[i].content);
+                }
+                var pure = parts.join('\n\n');
+                var fullHtml = buildFullHtml(pure);
+
+                var blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'cafet-test.html';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+
+                fullHtmlCode = fullHtml;
+                assembledCode = '';
+                pureCode = '';
+                render();
+            }
+
+            function copyToClipboard(text) {
                 if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        alert('✅ Copié dans le presse-papier !');
-                    }).catch(() => fallbackCopy(text));
-                } else {
-                    fallbackCopy(text);
-                }
-            };
+                    navigator.clipboard.writeText(text).then(function() { alert('✅ Copié !'); })['catch'](function() {
+                        fallbackCopy(text);
+                    });
+                } else { fallbackCopy(text); }
+            }
 
-            const fallbackCopy = (text) => {
-                const ta = document.createElement('textarea');
+            function fallbackCopy(text) {
+                var ta = document.createElement('textarea');
                 ta.value = text;
                 document.body.appendChild(ta);
                 ta.select();
                 document.execCommand('copy');
                 document.body.removeChild(ta);
                 alert('✅ Copié !');
-            };
+            }
 
-            const toggleTheme = () => {
-                setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-            };
+            function toggleTheme() {
+                theme = (theme === 'light' ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                saveTheme();
+                render();
+            }
 
-            const clearAll = () => {
+            function clearAll() {
                 if (!confirm('Effacer tous les fragments ?')) return;
-                setFragments([]);
-                setAssembledCode('');
-                setPureCode('');
-            };
+                fragments = [];
+                assembledCode = '';
+                pureCode = '';
+                fullHtmlCode = '';
+                saveFragments();
+                render();
+            }
 
-            // --- Composants internes ---
-            const FragmentChip = ({ fragment, onEdit, onDelete }) => {
-                const lines = fragment.content.split('\n').length;
-                return ( <
-                    div className = "fragment-chip"
-                    onClick = {
-                        () => onEdit(fragment.id, fragment.content) } >
-                    <
-                    span > 📄 { fragment.id } < /span> <
-                    span className = "badge" > { lines } lignes < /span> <
-                    span className = "del"
-                    onClick = {
-                        (e) => { e.stopPropagation();
-                            onDelete(fragment.id); } } >
-                    ✕ <
-                    /span> <
-                    /div>
-                );
-            };
+            function openModal(id, content) {
+                modal = { id: id, content: content };
+                render();
+                setTimeout(function() {
+                    var ta = document.querySelector('.modal textarea');
+                    if (ta) ta.focus();
+                }, 50);
+            }
 
-            const ModalComponent = ({ modal, onConfirm, onCancel }) => {
-                const [content, setContent] = useState(modal.content);
-                return ( <
-                        div className = "modal-overlay"
-                        onClick = {
-                            (e) => { if (e.target === e.currentTarget) onCancel(); } } >
-                        <
-                        div className = "modal" >
-                        <
-                        h2 >
-                        ✂️ Modification du fragment :
-                        <
-                        span style = { { color: 'var(--primary)' } } > { modal.id } < /span> <
-                        /h2> <
-                        p style = { { fontSize: '14px', opacity: 0.7, marginBottom: '12px' } } >
-                        Remplace le contenu ci - dessous par le nouveau code fourni par l 'IA, puis valide. <
-                        /p> <
-                        textarea
-                        value = { content }
-                        onChange = {
-                            (e) => setContent(e.target.value) }
-                        style = { { minHeight: '280px' } }
-                        /> <
-                        div className = "modal-actions" >
-                        <
-                        button className = "btn btn-outline"
-                        onClick = { onCancel } > Annuler < /button> <
-                        button className = "btn btn-success"
-                        onClick = {
-                            () => {
-                                if (content.trim() === '') { alert('Le contenu ne peut pas être vide.');
-                                    return; }
-                                onConfirm(modal.id, content);
-                            } } >
-                        ✅ Valider le remplacement <
-                        /button> <
-                        /div> <
-                        /div> <
-                        /div>
-                    );
-                };
+            function closeModal() {
+                modal = null;
+                render();
+            }
 
-                return ( <
-                        div className = "app" >
-                        <
-                        header className = "header" >
-                        <
-                        h1 >
-                        🧑‍⚕️ Chirurgien de Code <
-                        span > Pro < /span> <
-                        /h1> <
-                        button className = "theme-toggle"
-                        onClick = { toggleTheme } >
-                        { theme === 'light' ? '🌙 Mode Nuit' : '☀️ Mode Jour' } <
-                        /button> <
-                        /header>
+            function handleModalConfirm() {
+                var ta = document.querySelector('.modal textarea');
+                if (!ta) return;
+                var content = ta.value;
+                if (content.trim() === '') { alert('Le contenu ne peut pas être vide.'); return; }
+                updateFragment(modal.id, content);
+            }
 
-                        { /* CARTE 1 */ } <
-                        div className = "card" >
-                        <
-                        div className = "card-title" >
-                        📥 1. Colle le monolithe "balisé" <
-                        small > (---FRAGMENT: Nom---...---END---) < /small> <
-                        /div> <
-                        textarea
-                        value = { rawInput }
-                        onChange = {
-                            (e) => setRawInput(e.target.value) }
-                        style = { { minHeight: '140px' } }
-                        placeholder = { `Exemple :\n\n---FRAGMENT: MonComposant ---\nfunction MonComposant() {\n  return <div>Bonjour</div>;\n}\n---END---` }
-                        /> <
-                        div className = "actions-row" >
-                        <
-                        button className = "btn"
-                        onClick = { parseFragments } >
-                        ✂️ Découper en fragments <
-                        /button> <
-                        span className = "stats" >
-                        { fragments.length } fragment { fragments.length > 1 ? 's' : '' } en mémoire <
-                        /span> {
-                            fragments.length > 0 && ( <
-                                button className = "btn btn-danger"
-                                onClick = { clearAll } >
-                                🗑️ Tout effacer <
-                                /button>
-                            )
-                        } <
-                        /div> <
-                        /div>
+            // ============================================================
+            // RENDU
+            // ============================================================
+            function render() {
+                var themeIcon = theme === 'light' ? '🌙 Mode Nuit' : '☀️ Mode Jour';
+                var fragCount = fragments.length;
 
-                        { /* CARTE 2 */ } <
-                        div className = "card" >
-                        <
-                        div className = "card-title" >
-                        🎯 2. Fragments détectés(clique pour modifier) <
-                        small > { fragments.length } bloc(s) < /small> <
-                        /div> {
-                            fragments.length === 0 ? ( <
-                                div className = "empty-state" > Aucun fragment pour l 'instant. Colle et découpe !</div>
-                            ) : ( <
-                                div className = "fragment-grid" > {
-                                    fragments.map(f => ( <
-                                        FragmentChip key = { f.id }
-                                        fragment = { f }
-                                        onEdit = {
-                                            (id, content) => setModal({ id, content }) }
-                                        onDelete = { deleteFragment }
-                                        />
-                                    ))
-                                } <
-                                /div>
-                            )
-                        } <
-                        /div>
-
-                        { /* CARTE 3 - ASSEMBLAGE DOUBLE */ } <
-                        div className = "card" >
-                        <
-                        div className = "card-title" >
-                        🚀 3. Reconstruire le monolithe <
-                        /div> <
-                        div className = "tab-actions" >
-                        <
-                        button className = "btn btn-warning"
-                        onClick = { reconstructTagged }
-                        disabled = { fragments.length === 0 } >
-                        🧩 Avec balises (sauvegarde) <
-                        /button> <
-                        button className = "btn btn-success"
-                        onClick = { reconstructPure }
-                        disabled = { fragments.length === 0 } >
-                        ⚡ Code PUR (pour tester) <
-                        /button> <
-                        /div>
-
-                        { /* AFFICHAGE DU CODE AVEC BALISES */ } {
-                            assembledCode && ( <
-                                div className = "preview-wrapper" >
-                                <
-                                div className = "preview-header" >
-                                <
-                                strong > 📝 Monolithe avec balises (copie pour IA / sauvegarde) < /strong> <
-                                button className = "btn-copy"
-                                onClick = {
-                                    () => copyToClipboard(assembledCode) } >
-                                📋 Copier <
-                                /button> <
-                                /div> <
-                                textarea
-                                value = { assembledCode }
-                                readOnly
-                                style = { { minHeight: '250px', fontFamily: 'monospace' } }
-                                /> <
-                                /div>
-                            )
-                        }
-
-                        { /* AFFICHAGE DU CODE PUR */ } {
-                            pureCode && ( <
-                                div className = "preview-wrapper" >
-                                <
-                                div className = "preview-header" >
-                                <
-                                strong > ⚡ Code source PUR (copie → coller dans .html pour tester) < /strong> <
-                                button className = "btn-copy"
-                                onClick = {
-                                    () => copyToClipboard(pureCode) } >
-                                📋 Copier le pur <
-                                /button> <
-                                /div> <
-                                textarea
-                                value = { pureCode }
-                                readOnly
-                                style = { { minHeight: '250px', fontFamily: 'monospace', borderColor: 'var(--success)' } }
-                                /> <
-                                /div>
-                            )
-                        } <
-                        /div>
-
-                        { /* MODALE */ } {
-                            modal && ( <
-                                ModalComponent modal = { modal }
-                                onConfirm = { updateFragment }
-                                onCancel = {
-                                    () => setModal(null) }
-                                />
-                            )
-                        } <
-                        /div>
-                    );
+                var modalHtml = '';
+                if (modal) {
+                    modalHtml = '<div class="modal-overlay" id="modalOverlay">\n' +
+                        '    <div class="modal">\n' +
+                        '        <h2>✂️ Modification : <span style="color: var(--primary);">' + escapeHtml(modal.id) +
+                        '</span></h2>\n' +
+                        '        <textarea id="modalTextarea">' + escapeHtml(modal.content) + '</textarea>\n' +
+                        '        <div class="modal-actions">\n' +
+                        '            <button class="btn btn-outline" id="modalCancelBtn">Annuler</button>\n' +
+                        '            <button class="btn btn-success" id="modalConfirmBtn">✅ Valider</button>\n' +
+                        '        </div>\n' +
+                        '    </div>\n' +
+                        '</div>';
                 }
 
-                const root = ReactDOM.createRoot(document.getElementById('root'));
-                root.render( < App / > );
+                var fragmentsHtml = '';
+                if (fragments.length === 0) {
+                    fragmentsHtml = '<div class="empty-state">Aucun fragment pour l\'instant. Colle et découpe !</div>';
+                } else {
+                    var chips = '';
+                    for (var i = 0; i < fragments.length; i++) {
+                        var f = fragments[i];
+                        var lines = f.content.split('\n').length;
+                        var safeId = escapeHtml(f.id);
+                        chips += '<div class="fragment-chip" data-id="' + safeId + '">\n' +
+                            '    <span>📄 ' + safeId + '</span>\n' +
+                            '    <span class="badge">' + lines + ' lignes</span>\n' +
+                            '    <span class="del" data-id="' + safeId + '">✕</span>\n' +
+                            '</div>\n';
+                    }
+                    fragmentsHtml = '<div class="fragment-grid">' + chips + '</div>';
+                }
+
+                var previewHtml = '';
+
+                if (assembledCode) {
+                    previewHtml += '<div class="preview-wrapper">\n' +
+                        '    <div class="preview-header">\n' +
+                        '        <strong>🧩 Code avec balises</strong>\n' +
+                        '        <button class="btn-copy" data-copy="' + escapeHtml(assembledCode) + '">📋 Copier</button>\n' +
+                        '    </div>\n' +
+                        '    <textarea readonly style="min-height:150px;">' + escapeHtml(assembledCode) + '</textarea>\n' +
+                        '</div>\n';
+                }
+
+                if (pureCode) {
+                    previewHtml += '<div class="preview-wrapper">\n' +
+                        '    <div class="preview-header">\n' +
+                        '        <strong>⚡ Code PUR (JS/JSX brut)</strong>\n' +
+                        '        <button class="btn-copy" data-copy="' + escapeHtml(pureCode) + '">📋 Copier</button>\n' +
+                        '    </div>\n' +
+                        '    <textarea readonly style="min-height:150px; border-color: var(--success);">' + escapeHtml(
+                            pureCode) + '</textarea>\n' +
+                        '</div>\n';
+                }
+
+                if (fullHtmlCode) {
+                    previewHtml += '<div class="preview-wrapper">\n' +
+                        '    <div class="preview-header">\n' +
+                        '        <strong>📦 HTML complet (aperçu)</strong>\n' +
+                        '        <button class="btn-copy" data-copy="' + escapeHtml(fullHtmlCode) +
+                        '">📋 Copier</button>\n' +
+                        '    </div>\n' +
+                        '    <textarea readonly style="min-height:250px; border-color: #6f42c1; background: #0d1117; color: #e6e6e6;">' +
+                        escapeHtml(fullHtmlCode) + '</textarea>\n' +
+                        '</div>\n';
+                }
+
+                var html = '<div id="app-container">\n' +
+                    '    <header class="header">\n' +
+                    '        <h1>🧑‍⚕️ Chirurgien Vanilla <span>V2</span></h1>\n' +
+                    '        <button class="theme-toggle" id="themeToggleBtn">' + themeIcon + '</button>\n' +
+                    '    </header>\n' +
+                    '    <div class="card">\n' +
+                    '        <div class="card-title">📥 1. Colle le code balisé <small>(---FRAGMENT: Nom --- ... ---END---)</small></div>\n' +
+                    '        <textarea id="rawTextarea" style="min-height:140px;" placeholder="Exemple :\n\n---FRAGMENT: MonComposant ---\nfunction Test() { return <div>Bonjour</div>; }\n---END---">' +
+                    escapeHtml(rawInput) + '</textarea>\n' +
+                    '        <div class="actions-row">\n' +
+                    '            <button class="btn" id="parseBtn">✂️ Découper</button>\n' +
+                    '            <span class="stats">' + fragCount + ' fragment' + (fragCount > 1 ? 's' : '') +
+                    ' en mémoire</span>\n';
+
+                if (fragCount > 0) {
+                    html += '            <button class="btn btn-danger" id="clearAllBtn">🗑️ Effacer</button>\n';
+                }
+
+                html += '        </div>\n' +
+                    '    </div>\n' +
+                    '    <div class="card">\n' +
+                    '        <div class="card-title">🎯 2. Fragments (clique pour modifier) <small>' + fragCount +
+                    ' bloc(s)</small></div>\n' +
+                    fragmentsHtml +
+                    '    </div>\n' +
+                    '    <div class="card">\n' +
+                    '        <div class="card-title">🚀 3. Reconstruire</div>\n' +
+                    '        <div class="tab-actions">\n' +
+                    '            <button class="btn btn-warning" id="reconstructTaggedBtn"' + (fragCount === 0 ?
+                        ' disabled' : '') + '>🧩 Avec balises</button>\n' +
+                    '            <button class="btn btn-success" id="reconstructPureBtn"' + (fragCount === 0 ?
+                        ' disabled' : '') + '>⚡ Code PUR</button>\n' +
+                    '            <button class="btn btn-download" id="downloadHtmlBtn"' + (fragCount === 0 ?
+                        ' disabled' : '') + '>📥 Télécharger HTML</button>\n' +
+                    '        </div>\n' +
+                    previewHtml +
+                    '    </div>\n' +
+                    modalHtml +
+                    '</div>';
+
+                app.innerHTML = html;
+
+                // Événements
+                var rawTa = document.getElementById('rawTextarea');
+                if (rawTa) {
+                    rawTa.addEventListener('input', function(e) {
+                        rawInput = e.target.value;
+                        saveRaw();
+                    });
+                }
+
+                var parseBtn = document.getElementById('parseBtn');
+                if (parseBtn) parseBtn.addEventListener('click', parseFragments);
+
+                var clearBtn = document.getElementById('clearAllBtn');
+                if (clearBtn) clearBtn.addEventListener('click', clearAll);
+
+                var themeBtn = document.getElementById('themeToggleBtn');
+                if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
+                var taggedBtn = document.getElementById('reconstructTaggedBtn');
+                if (taggedBtn) taggedBtn.addEventListener('click', reconstructTagged);
+
+                var pureBtn = document.getElementById('reconstructPureBtn');
+                if (pureBtn) pureBtn.addEventListener('click', reconstructPure);
+
+                var downloadBtn = document.getElementById('downloadHtmlBtn');
+                if (downloadBtn) downloadBtn.addEventListener('click', downloadFullHtml);
+
+                // Copie via data-copy
+                var copyBtns = document.querySelectorAll('[data-copy]');
+                for (var c = 0; c < copyBtns.length; c++) {
+                    copyBtns[c].addEventListener('click', function() {
+                        var text = this.dataset.copy;
+                        copyToClipboard(text);
+                    });
+                }
+
+                // Fragments chips
+                var chips = document.querySelectorAll('.fragment-chip');
+                for (var ch = 0; ch < chips.length; ch++) {
+                    chips[ch].addEventListener('click', function(e) {
+                        if (e.target.classList.contains('del')) return;
+                        var id = this.dataset.id;
+                        for (var f = 0; f < fragments.length; f++) {
+                            if (fragments[f].id === id) {
+                                openModal(id, fragments[f].content);
+                                break;
+                            }
+                        }
+                    });
+                }
+
+                var dels = document.querySelectorAll('.fragment-chip .del');
+                for (var d = 0; d < dels.length; d++) {
+                    dels[d].addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var id = this.dataset.id;
+                        deleteFragment(id);
+                    });
+                }
+
+                // Modal
+                var overlay = document.getElementById('modalOverlay');
+                if (overlay) {
+                    overlay.addEventListener('click', function(e) {
+                        if (e.target === this) closeModal();
+                    });
+                }
+
+                var cancelBtn = document.getElementById('modalCancelBtn');
+                if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+                var confirmBtn = document.getElementById('modalConfirmBtn');
+                if (confirmBtn) confirmBtn.addEventListener('click', handleModalConfirm);
+
+                document.addEventListener('keydown', function escHandler(e) {
+                    if (e.key === 'Escape' && modal) {
+                        closeModal();
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                });
+            }
+
+            function escapeHtml(unsafe) {
+                if (unsafe === undefined || unsafe === null) return '';
+                var div = document.createElement('div');
+                div.textContent = unsafe;
+                return div.innerHTML;
+            }
+
+            // ============================================================
+            // LANCEMENT
+            // ============================================================
+            loadState();
+            render();
+        })();
     </script>
 </body>
 </html>
