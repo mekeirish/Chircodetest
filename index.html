@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧑‍⚕️ Chirurgien React (UMD)</title>
+
+    <!-- 1. CHARGEMENT DES BIBLIOTHÈQUES VIA CDN (SANS IMPORT MAP) -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js">
+    </script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js">
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        :root {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --text: #1f2328;
+            --border: #d0d7de;
+            --primary: #0969da;
+            --primary-hover: #0550ae;
+            --danger: #cf222e;
+            --success: #2da44e;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --text: #f0f6fc;
+            --border: #30363d;
+            --primary: #58a6ff;
+            --primary-hover: #79c0ff;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        #root {
+            width: 100%;
+            max-width: 1300px;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header h1 span {
+            background: var(--primary);
+            color: #fff;
+            font-size: 14px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: var(--shadow);
+        }
+        .theme-toggle:hover {
+            opacity: 0.8;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .card-title small {
+            font-weight: 400;
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace, 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            outline: none;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .btn-danger {
+            background: var(--danger);
+        }
+        .btn-danger:hover {
+            background: #a0111f;
+        }
+        .btn-success {
+            background: var(--success);
+        }
+        .btn-success:hover {
+            background: #22863a;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover {
+            background: var(--bg);
+            transform: none;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 14px;
+            align-items: center;
+        }
+
+        /* GRILLE DES FRAGMENTS */
+        .fragment-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .fragment-chip {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            user-select: none;
+        }
+        .fragment-chip:hover {
+            border-color: var(--primary);
+            background: var(--surface);
+            transform: scale(1.02);
+        }
+        .fragment-chip .badge {
+            background: var(--primary);
+            color: #fff;
+            border-radius: 20px;
+            padding: 0 10px;
+            font-size: 11px;
+            line-height: 20px;
+        }
+        .fragment-chip .del {
+            color: var(--danger);
+            font-weight: 700;
+            margin-left: 4px;
+            cursor: pointer;
+            opacity: 0.6;
+        }
+        .fragment-chip .del:hover {
+            opacity: 1;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            max-width: 800px;
+            width: 100%;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal h2 {
+            margin-bottom: 8px;
+        }
+        .modal textarea {
+            min-height: 300px;
+            flex: 1;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        .empty-state {
+            opacity: 0.6;
+            font-style: italic;
+            padding: 10px 0;
+        }
+
+        /* PREVIEW */
+        .preview-wrapper {
+            margin-top: 16px;
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .preview-header strong {
+            font-size: 14px;
+        }
+        .btn-copy {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text);
+        }
+        .btn-copy:hover {
+            background: var(--bg);
+        }
+
+        .stats {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-left: auto;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            .card {
+                padding: 16px;
+            }
+            .modal {
+                padding: 16px;
+            }
+        }
+    </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4b6cb7">
+<link rel="apple-touch-icon" href="icon.png"></head>
+<body>
+    <div id="root"></div>
+
+    <!-- 2. NOTRE APPLICATION REACT (TRANSFORMÉE PAR BABEL) -->
+    <script type="text/babel">
+        const {
+            useState,
+            useEffect,
+            useRef
+        } = React;
+
+        // --- CONSTANTES STORAGE ---
+        const STORAGE_KEY = 'codeSurgeon_fragments';
+        const STORAGE_RAW_KEY = 'codeSurgeon_rawInput';
+        const STORAGE_THEME_KEY = 'theme';
+
+        // --- COMPOSANT PRINCIPAL ---
+        function App() {
+            const [fragments, setFragments] = useState([]);
+            const [rawInput, setRawInput] = useState('');
+            const [theme, setTheme] = useState('light');
+            const [assembledCode, setAssembledCode] = useState('');
+            const [modal, setModal] = useState(null); // { id, content }
+
+            // Chargement initial depuis localStorage
+            useEffect(() => {
+                const savedFrags = localStorage.getItem(STORAGE_KEY);
+                const savedRaw = localStorage.getItem(STORAGE_RAW_KEY);
+                const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+
+                if (savedFrags) {
+                    try { setFragments(JSON.parse(savedFrags)); } catch (e) {}
+                }
+                if (savedRaw) setRawInput(savedRaw);
+                if (savedTheme) {
+                    setTheme(savedTheme);
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            }, []);
+
+            // Sauvegardes automatiques
+            useEffect(() => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(fragments));
+            }, [fragments]);
+
+            useEffect(() => {
+                localStorage.setItem(STORAGE_RAW_KEY, rawInput);
+            }, [rawInput]);
+
+            useEffect(() => {
+                localStorage.setItem(STORAGE_THEME_KEY, theme);
+                document.documentElement.setAttribute('data-theme', theme);
+            }, [theme]);
+
+            // --- FONCTIONS MÉTIER ---
+
+            const parseFragments = () => {
+                const regex = /---FRAGMENT:\s*([^\n]+?)\s*---([\s\S]*?)---END---/g;
+                const matches = [];
+                let match;
+                let temp = rawInput;
+                while ((match = regex.exec(temp)) !== null) {
+                    const id = match[1].trim();
+                    const content = match[2].trim();
+                    const existingIndex = matches.findIndex(f => f.id === id);
+                    if (existingIndex !== -1) {
+                        matches[existingIndex].content = content;
+                    } else {
+                        matches.push({ id, content });
+                    }
+                }
+                if (matches.length === 0) {
+                    alert('⚠️ Aucun fragment trouvé ! Vérifie le format : ---FRAGMENT: Nom --- ... ---END---');
+                    return;
+                }
+                setFragments(matches);
+                setAssembledCode('');
+            };
+
+            const updateFragment = (id, newContent) => {
+                setFragments(prev =>
+                    prev.map(f => f.id === id ? { ...f, content: newContent.trim() } : f)
+                );
+                setModal(null);
+                setAssembledCode('');
+            };
+
+            const deleteFragment = (id) => {
+                if (!confirm(`Supprimer définitivement le fragment "${id}" ?`)) return;
+                setFragments(prev => prev.filter(f => f.id !== id));
+                setAssembledCode('');
+            };
+
+            const reconstruct = () => {
+                if (fragments.length === 0) {
+                    alert('Aucun fragment à assembler.');
+                    return;
+                }
+                const full = fragments.map(f =>
+                    `---FRAGMENT: ${f.id} ---\n${f.content}\n---END---`
+                ).join('\n\n');
+                setAssembledCode(full);
+            };
+
+            const copyToClipboard = (text) => {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        alert('✅ Monolithe copié dans le presse-papier !');
+                    }).catch(() => fallbackCopy(text));
+                } else {
+                    fallbackCopy(text);
+                }
+            };
+
+            const fallbackCopy = (text) => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                alert('✅ Monolithe copié !');
+            };
+
+            const toggleTheme = () => {
+                setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+            };
+
+            const clearAll = () => {
+                if (!confirm('Effacer tous les fragments ?')) return;
+                setFragments([]);
+                setAssembledCode('');
+            };
+
+            // --- SOUS-COMPOSANTS (pour la clarté) ---
+
+            const FragmentChip = ({ fragment, onEdit, onDelete }) => {
+                const lines = fragment.content.split('\n').length;
+                return ( <
+                    div className = "fragment-chip"
+                    onClick = {
+                        () => onEdit(fragment.id, fragment.content) } >
+                    <
+                    span > 📄 { fragment.id } < /span> <
+                    span className = "badge" > { lines } lignes < /span> <
+                    span className = "del"
+                    onClick = {
+                        (e) => { e.stopPropagation();
+                            onDelete(fragment.id); } } >
+                    ✕ <
+                    /span> <
+                    /div>
+                );
+            };
+
+            const ModalComponent = ({ modal, onConfirm, onCancel }) => {
+                const [content, setContent] = useState(modal.content);
+
+                return ( <
+                        div className = "modal-overlay"
+                        onClick = {
+                            (e) => { if (e.target === e.currentTarget) onCancel(); } } >
+                        <
+                        div className = "modal" >
+                        <
+                        h2 >
+                        ✂️ Modification du fragment :
+                        <
+                        span style = { { color: 'var(--primary)' } } > { modal.id } < /span> <
+                        /h2> <
+                        p style = { { fontSize: '14px', opacity: 0.7, marginBottom: '12px' } } >
+                        Remplace le contenu ci - dessous par le nouveau code fourni par l 'IA, puis valide. <
+                        /p> <
+                        textarea
+                        value = { content }
+                        onChange = {
+                            (e) => setContent(e.target.value) }
+                        style = { { minHeight: '280px' } }
+                        /> <
+                        div className = "modal-actions" >
+                        <
+                        button className = "btn btn-outline"
+                        onClick = { onCancel } > Annuler < /button> <
+                        button className = "btn btn-success"
+                        onClick = {
+                            () => {
+                                if (content.trim() === '') { alert('Le contenu ne peut pas être vide.');
+                                    return; }
+                                onConfirm(modal.id, content);
+                            } } >
+                        ✅ Valider le remplacement <
+                        /button> <
+                        /div> <
+                        /div> <
+                        /div>
+                    );
+                };
+
+                // --- RENDU PRINCIPAL ---
+                return ( <
+                        div className = "app" >
+                        <
+                        header className = "header" >
+                        <
+                        h1 >
+                        🧑‍⚕️ Chirurgien de Code
+                        <
+                        span > React UMD < /span> <
+                        /h1> <
+                        button className = "theme-toggle"
+                        onClick = { toggleTheme } >
+                        { theme === 'light' ? '🌙 Mode Nuit' : '☀️ Mode Jour' } <
+                        /button> <
+                        /header>
+
+                        { /* CARTE 1 : IMPORT */ } <
+                        div className = "card" >
+                        <
+                        div className = "card-title" >
+                        📥 1. Colle le monolithe "balisé" par l 'IA
+                        <
+                        small > (format:---FRAGMENT: Nom---...---END---) < /small> <
+                        /div> <
+                        textarea
+                        value = { rawInput }
+                        onChange = {
+                            (e) => setRawInput(e.target.value) }
+                        style = { { minHeight: '140px' } }
+                        placeholder = { `Exemple de format attendu :\n\n---FRAGMENT: MonComposant ---\nfunction MonComposant() {\n  return <div>Bonjour</div>;\n}\n---END---\n\n---FRAGMENT: Styles ---\nconst styles = { color: 'red' };\n---END---` }
+                        /> <
+                        div className = "actions-row" >
+                        <
+                        button className = "btn"
+                        onClick = { parseFragments } >
+                        ✂️ Découper en fragments <
+                        /button> <
+                        span className = "stats" >
+                        { fragments.length } fragment { fragments.length > 1 ? 's' : '' } en mémoire <
+                        /span> {
+                            fragments.length > 0 && ( <
+                                button className = "btn btn-danger"
+                                onClick = { clearAll } >
+                                🗑️ Tout effacer <
+                                /button>
+                            )
+                        } <
+                        /div> <
+                        /div>
+
+                        { /* CARTE 2 : FRAGMENTS */ } <
+                        div className = "card" >
+                        <
+                        div className = "card-title" >
+                        🎯 2. Fragments détectés(clique pour modifier) <
+                        small > { fragments.length } bloc(s) < /small> <
+                        /div> {
+                            fragments.length === 0 ? ( <
+                                div className = "empty-state" > Aucun fragment pour l 'instant. Colle et découpe !</div>
+                            ) : ( <
+                                div className = "fragment-grid" > {
+                                    fragments.map(f => ( <
+                                        FragmentChip key = { f.id }
+                                        fragment = { f }
+                                        onEdit = {
+                                            (id, content) => setModal({ id, content }) }
+                                        onDelete = { deleteFragment }
+                                        />
+                                    ))
+                                } <
+                                /div>
+                            )
+                        } <
+                        /div>
+
+                        { /* CARTE 3 : ASSEMBLAGE */ } <
+                        div className = "card" >
+                        <
+                        div className = "card-title" >
+                        🚀 3. Reconstruire le monolithe final <
+                        /div> <
+                        div className = "actions-row" >
+                        <
+                        button className = "btn btn-success"
+                        onClick = { reconstruct }
+                        disabled = { fragments.length === 0 } >
+                        🧩 Assembler le monolithe <
+                        /button> <
+                        span className = "stats" >
+                        { fragments.length } fragments→code complet <
+                        /span> <
+                        /div> {
+                            assembledCode && ( <
+                                div className = "preview-wrapper" >
+                                <
+                                div className = "preview-header" >
+                                <
+                                strong > Aperçu du monolithe reconstitué: < /strong> <
+                                button className = "btn-copy"
+                                onClick = {
+                                    () => copyToClipboard(assembledCode) } >
+                                📋 Copier tout <
+                                /button> <
+                                /div> <
+                                textarea
+                                value = { assembledCode }
+                                readOnly
+                                style = { { minHeight: '250px', fontFamily: 'monospace' } }
+                                /> <
+                                /div>
+                            )
+                        } <
+                        /div>
+
+                        { /* MODALE */ } {
+                            modal && ( <
+                                ModalComponent modal = { modal }
+                                onConfirm = { updateFragment }
+                                onCancel = {
+                                    () => setModal(null) }
+                                />
+                            )
+                        } <
+                        /div>
+                    );
+                }
+
+                // --- MONTAGE DE L'APPLICATION ---
+                const root = ReactDOM.createRoot(document.getElementById('root'));
+                root.render( < App / > );
+    </script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
+</body>
+</html>
