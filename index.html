@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧑‍⚕️ Chirurgien React (UMD)</title>
+    <title>🧑‍⚕️ Chirurgien de Code Pro</title>
 
     <!-- 1. CHARGEMENT DES BIBLIOTHÈQUES VIA CDN (SANS IMPORT MAP) -->
     <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js">
@@ -30,6 +30,7 @@
             --primary-hover: #0550ae;
             --danger: #cf222e;
             --success: #2da44e;
+            --warning: #d4a72c;
             --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             --radius: 12px;
             --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -66,7 +67,6 @@
             gap: 24px;
         }
 
-        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
@@ -106,7 +106,6 @@
             opacity: 0.8;
         }
 
-        /* CARDS */
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -179,6 +178,13 @@
         .btn-success:hover {
             background: #22863a;
         }
+        .btn-warning {
+            background: var(--warning);
+            color: #000;
+        }
+        .btn-warning:hover {
+            background: #b8922a;
+        }
         .btn-outline {
             background: transparent;
             color: var(--text);
@@ -202,7 +208,6 @@
             align-items: center;
         }
 
-        /* GRILLE DES FRAGMENTS */
         .fragment-grid {
             display: flex;
             flex-wrap: wrap;
@@ -248,7 +253,6 @@
             opacity: 1;
         }
 
-        /* MODAL */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -292,9 +296,10 @@
             padding: 10px 0;
         }
 
-        /* PREVIEW */
         .preview-wrapper {
             margin-top: 16px;
+            border-top: 1px dashed var(--border);
+            padding-top: 16px;
         }
         .preview-header {
             display: flex;
@@ -327,6 +332,18 @@
             margin-left: auto;
         }
 
+        .tab-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .tab-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 22px;
@@ -339,35 +356,31 @@
             }
         }
     </style>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4b6cb7">
-<link rel="apple-touch-icon" href="icon.png"></head>
+</head>
 <body>
     <div id="root"></div>
 
-    <!-- 2. NOTRE APPLICATION REACT (TRANSFORMÉE PAR BABEL) -->
     <script type="text/babel">
         const {
             useState,
             useEffect,
-            useRef
+            useRef,
+            useCallback,
+            useMemo
         } = React;
 
-        // --- CONSTANTES STORAGE ---
         const STORAGE_KEY = 'codeSurgeon_fragments';
         const STORAGE_RAW_KEY = 'codeSurgeon_rawInput';
         const STORAGE_THEME_KEY = 'theme';
 
-        // --- COMPOSANT PRINCIPAL ---
         function App() {
             const [fragments, setFragments] = useState([]);
             const [rawInput, setRawInput] = useState('');
             const [theme, setTheme] = useState('light');
-            const [assembledCode, setAssembledCode] = useState('');
-            const [modal, setModal] = useState(null); // { id, content }
+            const [assembledCode, setAssembledCode] = useState(''); // Avec balises
+            const [pureCode, setPureCode] = useState(''); // Sans balises (pour tester)
+            const [modal, setModal] = useState(null);
 
-            // Chargement initial depuis localStorage
             useEffect(() => {
                 const savedFrags = localStorage.getItem(STORAGE_KEY);
                 const savedRaw = localStorage.getItem(STORAGE_RAW_KEY);
@@ -385,7 +398,6 @@
                 }
             }, []);
 
-            // Sauvegardes automatiques
             useEffect(() => {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(fragments));
             }, [fragments]);
@@ -398,8 +410,6 @@
                 localStorage.setItem(STORAGE_THEME_KEY, theme);
                 document.documentElement.setAttribute('data-theme', theme);
             }, [theme]);
-
-            // --- FONCTIONS MÉTIER ---
 
             const parseFragments = () => {
                 const regex = /---FRAGMENT:\s*([^\n]+?)\s*---([\s\S]*?)---END---/g;
@@ -422,6 +432,7 @@
                 }
                 setFragments(matches);
                 setAssembledCode('');
+                setPureCode('');
             };
 
             const updateFragment = (id, newContent) => {
@@ -430,15 +441,18 @@
                 );
                 setModal(null);
                 setAssembledCode('');
+                setPureCode('');
             };
 
             const deleteFragment = (id) => {
                 if (!confirm(`Supprimer définitivement le fragment "${id}" ?`)) return;
                 setFragments(prev => prev.filter(f => f.id !== id));
                 setAssembledCode('');
+                setPureCode('');
             };
 
-            const reconstruct = () => {
+            // --- RECONSTRUCTION AVEC BALISES (pour sauvegarde) ---
+            const reconstructTagged = () => {
                 if (fragments.length === 0) {
                     alert('Aucun fragment à assembler.');
                     return;
@@ -447,12 +461,25 @@
                     `---FRAGMENT: ${f.id} ---\n${f.content}\n---END---`
                 ).join('\n\n');
                 setAssembledCode(full);
+                setPureCode(''); // on efface l'autre pour la clarté
+            };
+
+            // --- RECONSTRUCTION CODE PUR (pour tester) ---
+            const reconstructPure = () => {
+                if (fragments.length === 0) {
+                    alert('Aucun fragment.');
+                    return;
+                }
+                // On concatène juste les contenus dans l'ordre
+                const pure = fragments.map(f => f.content).join('\n\n');
+                setPureCode(pure);
+                setAssembledCode(''); // on efface l'autre
             };
 
             const copyToClipboard = (text) => {
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(text).then(() => {
-                        alert('✅ Monolithe copié dans le presse-papier !');
+                        alert('✅ Copié dans le presse-papier !');
                     }).catch(() => fallbackCopy(text));
                 } else {
                     fallbackCopy(text);
@@ -466,7 +493,7 @@
                 ta.select();
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                alert('✅ Monolithe copié !');
+                alert('✅ Copié !');
             };
 
             const toggleTheme = () => {
@@ -477,10 +504,10 @@
                 if (!confirm('Effacer tous les fragments ?')) return;
                 setFragments([]);
                 setAssembledCode('');
+                setPureCode('');
             };
 
-            // --- SOUS-COMPOSANTS (pour la clarté) ---
-
+            // --- Composants internes ---
             const FragmentChip = ({ fragment, onEdit, onDelete }) => {
                 const lines = fragment.content.split('\n').length;
                 return ( <
@@ -502,7 +529,6 @@
 
             const ModalComponent = ({ modal, onConfirm, onCancel }) => {
                 const [content, setContent] = useState(modal.content);
-
                 return ( <
                         div className = "modal-overlay"
                         onClick = {
@@ -543,16 +569,14 @@
                     );
                 };
 
-                // --- RENDU PRINCIPAL ---
                 return ( <
                         div className = "app" >
                         <
                         header className = "header" >
                         <
                         h1 >
-                        🧑‍⚕️ Chirurgien de Code
-                        <
-                        span > React UMD < /span> <
+                        🧑‍⚕️ Chirurgien de Code <
+                        span > Pro < /span> <
                         /h1> <
                         button className = "theme-toggle"
                         onClick = { toggleTheme } >
@@ -560,20 +584,19 @@
                         /button> <
                         /header>
 
-                        { /* CARTE 1 : IMPORT */ } <
+                        { /* CARTE 1 */ } <
                         div className = "card" >
                         <
                         div className = "card-title" >
-                        📥 1. Colle le monolithe "balisé" par l 'IA
-                        <
-                        small > (format:---FRAGMENT: Nom---...---END---) < /small> <
+                        📥 1. Colle le monolithe "balisé" <
+                        small > (---FRAGMENT: Nom---...---END---) < /small> <
                         /div> <
                         textarea
                         value = { rawInput }
                         onChange = {
                             (e) => setRawInput(e.target.value) }
                         style = { { minHeight: '140px' } }
-                        placeholder = { `Exemple de format attendu :\n\n---FRAGMENT: MonComposant ---\nfunction MonComposant() {\n  return <div>Bonjour</div>;\n}\n---END---\n\n---FRAGMENT: Styles ---\nconst styles = { color: 'red' };\n---END---` }
+                        placeholder = { `Exemple :\n\n---FRAGMENT: MonComposant ---\nfunction MonComposant() {\n  return <div>Bonjour</div>;\n}\n---END---` }
                         /> <
                         div className = "actions-row" >
                         <
@@ -594,7 +617,7 @@
                         /div> <
                         /div>
 
-                        { /* CARTE 2 : FRAGMENTS */ } <
+                        { /* CARTE 2 */ } <
                         div className = "card" >
                         <
                         div className = "card-title" >
@@ -619,39 +642,65 @@
                         } <
                         /div>
 
-                        { /* CARTE 3 : ASSEMBLAGE */ } <
+                        { /* CARTE 3 - ASSEMBLAGE DOUBLE */ } <
                         div className = "card" >
                         <
                         div className = "card-title" >
-                        🚀 3. Reconstruire le monolithe final <
+                        🚀 3. Reconstruire le monolithe <
                         /div> <
-                        div className = "actions-row" >
+                        div className = "tab-actions" >
                         <
-                        button className = "btn btn-success"
-                        onClick = { reconstruct }
+                        button className = "btn btn-warning"
+                        onClick = { reconstructTagged }
                         disabled = { fragments.length === 0 } >
-                        🧩 Assembler le monolithe <
+                        🧩 Avec balises (sauvegarde) <
                         /button> <
-                        span className = "stats" >
-                        { fragments.length } fragments→code complet <
-                        /span> <
-                        /div> {
+                        button className = "btn btn-success"
+                        onClick = { reconstructPure }
+                        disabled = { fragments.length === 0 } >
+                        ⚡ Code PUR (pour tester) <
+                        /button> <
+                        /div>
+
+                        { /* AFFICHAGE DU CODE AVEC BALISES */ } {
                             assembledCode && ( <
                                 div className = "preview-wrapper" >
                                 <
                                 div className = "preview-header" >
                                 <
-                                strong > Aperçu du monolithe reconstitué: < /strong> <
+                                strong > 📝 Monolithe avec balises (copie pour IA / sauvegarde) < /strong> <
                                 button className = "btn-copy"
                                 onClick = {
                                     () => copyToClipboard(assembledCode) } >
-                                📋 Copier tout <
+                                📋 Copier <
                                 /button> <
                                 /div> <
                                 textarea
                                 value = { assembledCode }
                                 readOnly
                                 style = { { minHeight: '250px', fontFamily: 'monospace' } }
+                                /> <
+                                /div>
+                            )
+                        }
+
+                        { /* AFFICHAGE DU CODE PUR */ } {
+                            pureCode && ( <
+                                div className = "preview-wrapper" >
+                                <
+                                div className = "preview-header" >
+                                <
+                                strong > ⚡ Code source PUR (copie → coller dans .html pour tester) < /strong> <
+                                button className = "btn-copy"
+                                onClick = {
+                                    () => copyToClipboard(pureCode) } >
+                                📋 Copier le pur <
+                                /button> <
+                                /div> <
+                                textarea
+                                value = { pureCode }
+                                readOnly
+                                style = { { minHeight: '250px', fontFamily: 'monospace', borderColor: 'var(--success)' } }
                                 /> <
                                 /div>
                             )
@@ -671,11 +720,8 @@
                     );
                 }
 
-                // --- MONTAGE DE L'APPLICATION ---
                 const root = ReactDOM.createRoot(document.getElementById('root'));
                 root.render( < App / > );
     </script>
-
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
 </body>
 </html>
